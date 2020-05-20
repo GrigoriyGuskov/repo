@@ -29,6 +29,13 @@ Arg get_mr(word w) {
 			else
 				printf("(R%o)+ ",r);
 			break;
+		case 3:					//#3
+			res.adr = reg[r];
+			res.val = w_read(res.adr);
+			res.val = w_read(res.val);
+			reg[r] += 2;
+			printf("@(R%o)+ ",r);
+			break;
 		default:
 			fprintf(stderr, "Mode %o NOT IMPLEMENTED YET!\n", mode);
 			exit(1);
