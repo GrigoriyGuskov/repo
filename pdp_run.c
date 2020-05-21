@@ -55,13 +55,18 @@ Arg get_mr(word w) {
 byte get_R(word w) {
 	byte res;
 	res = (w>>6) & 7;
-	printf("R%x ", res);
+	printf("R%o ", res);
 	return res;
 }
 
 byte get_NN(word w) {
-	printf("%x ", w & 63);
+	printf("%o ", w & 63);
 	return w & 63;
+}
+
+byte get_XX(word w) {
+	printf("%o ", w & 255);
+	return w & 255;
 }
 
 void run() {
@@ -77,18 +82,19 @@ void run() {
 			do_halt();
 		}
 		else {
-			for(int i = 0; Command[i].mask ; i++){
-				if((w & Command[i].mask) == Command[i].opcode) {
-					printf("%s ", Command[i].name);
+			for(int i = 0; cmd[i].mask ; i++){
+				if((w & cmd[i].mask) == cmd[i].opcode) {
+					printf("%s ", cmd[i].name);
 					ss = get_mr(w >> 6);
 					dd = get_mr(w);
-					Command[i].do_func();
+					R = get_R(w);
+					NN = get_NN(w); 
+					cmd[i].do_func();
 				}
 			}
-		}
-		else
-			do_nothing();
-		*/
+		}*/
+		
+		
 		
 		if (w == 0) {
 			printf("halt ");
@@ -111,6 +117,11 @@ void run() {
 			R = get_R(w);
 			NN = get_NN(w);
 			do_sob ();
+		}
+		else if ((w & 0xff00) == 0x0100) {
+			printf("br ");
+			XX = get_XX(w);
+			do_br ();
 		}
 		else 
 			do_nothing ();

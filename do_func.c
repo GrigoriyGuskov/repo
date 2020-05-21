@@ -26,14 +26,21 @@ void do_sob () {
 	}
 }
 
+void do_br () {
+	pc = pc + XX*2;
+
+}
+
 void do_nothing () {
 	printf("unknown\n");
 }
 
 
-/*Command cmd[] = {
-	{0170000, 0010000, "mov ", do_mov()},
-	{0170000, 0060000, "add ", do_add()},
+Command cmd[] = {
+	{0170000, 0010000, "mov", do_mov},
+	{0170000, 0060000, "add", do_add},
+	{0177000, 0077000, "sob", do_sob},
+	{0xff00, 0x0100, "br", do_br},
 	
-	{0, 0, "halt ", do_halt()}
-};*/
+	{0, 0, "halt ", do_halt}
+};
