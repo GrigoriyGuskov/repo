@@ -17,32 +17,59 @@ Arg get_mr(word w) {
 			break;
 		case 1:					//(R3)
 			res.adr = reg[r];
-			res.val = w_read(res.adr);
+			if (B)
+				res.val = b_read(res.adr);
+			else
+				res.val = w_read(res.adr);
 			printf("(R%o) ",r);
 			break;
 		case 2:					//#3
 			res.adr = reg[r];
-			res.val = w_read(res.adr);
-			reg[r] += 2;
+			if (B){
+				res.val = b_read(res.adr);
+				if(r<6)
+					reg[r]++;
+				else
+					reg[r] += 2;
+			}
+			else {
+				res.val = w_read(res.adr);
+				reg[r] += 2;
+			}
 			if (r == 7)
 				printf("#%o ",res.val);
 			else
 				printf("(R%o)+ ",r);
 			break;
-		case 3:					
-			res.adr = reg[r];
-			res.val = w_read(res.adr);
-			res.val = w_read(res.val);
-			reg[r] += 2;
+		case 3:
+			res.adr = w_read(reg[r]);
+			if(B) {
+				res.val = b_read(res.adr);
+				reg[r] += 2;
+			}
+			else {
+				res.val = w_read(res.adr);
+				reg[r] += 2;
+			} 
 			if (r == 7)
-				printf("@#%o ",res.val);
+				printf("@#%o ",res.adr);
 			else
 				printf("@(R%o)+ ",r);
 			break;
 		case 4:					//#3
-			reg[r] -= 2;
-			res.adr = reg[r];
-			res.val = w_read(res.adr);
+			if(B) {
+				if(r<6)
+					reg[r]--;
+				else
+					reg[r] -= 2;
+				res.adr = reg[r];
+				res.val = w_read(res.adr);
+			}
+			else {
+				reg[r] -= 2;
+				res.adr = reg[r];
+				res.val = w_read(res.adr);
+			}
 			printf("-(R%o) ",r);
 			break;
 		default:
@@ -59,12 +86,18 @@ byte get_R(word w) {
 	return res;
 }
 
+byte get_B(word w) {
+	byte res;
+	res = (w >> 15) & 1;
+	return res;
+}
+
 byte get_NN(word w) {
 	printf("%o ", w & 63);
 	return w & 63;
 }
 
-byte get_XX(word w) {
+char get_XX(word w) {
 	printf("%o ", w & 255);
 	return w & 255;
 }
@@ -78,24 +111,32 @@ void run() {
 		pc += 2;
 		
 		/*if (w == 0) {
-			printf("halt ");
+			printf("HALT ");
 			do_halt();
-		}
-		else {
+		}*/
+		//else {
 			for(int i = 0; cmd[i].mask ; i++){
 				if((w & cmd[i].mask) == cmd[i].opcode) {
 					printf("%s ", cmd[i].name);
-					ss = get_mr(w >> 6);
-					dd = get_mr(w);
-					R = get_R(w);
-					NN = get_NN(w); 
+					if(cmd[i].par & 1)
+						XX = get_XX(w);
+					if(cmd[i].par & 2)
+						ss = get_mr(w >> 6);
+					if(cmd[i].par & 4)
+						R = get_R(w);
+					if(cmd[i].par & 8)
+						NN = get_NN(w); 
+					if(cmd[i].par & 16)
+						dd = get_mr(w);
+					if(cmd[i].par & 32)
+						B = get_B(w);
 					cmd[i].do_func();
 				}
 			}
-		}*/
+		//}
 		
 		
-		
+		/*
 		if (w == 0) {
 			printf("halt ");
 			do_halt();
@@ -124,10 +165,11 @@ void run() {
 			do_br ();
 		}
 		else 
-			do_nothing ();
+			do_nothing ();*/
 		printf("\n");
 		for(int i = 0; i<8; i++)
 			printf("R%o=%o ", i, reg[i]);
+		print_NZVC();
 	}
 }
 
