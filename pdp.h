@@ -32,6 +32,7 @@ byte mem[MEMSIZE];
 word reg[8];
 
 #define pc reg[7]
+#define sp reg[6]
 
 extern Command cmd[];
 
@@ -79,10 +80,10 @@ void do_cln();
 void do_clv();
 void do_clz();
 void do_scc();
-void do_slc();
-void do_sln();
-void do_slv();
-void do_slz();
+void do_sec();
+void do_sen();
+void do_sev();
+void do_sez();
 
 
 

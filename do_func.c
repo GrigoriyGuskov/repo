@@ -4,7 +4,7 @@
 
 
 Command cmd[] = {
-		/*{0177777, 0000240, NO, "NOP", do_nothing},
+		{0177777, 0000240, NO, "NOP", do_nothing},
 
 		{0177777, 0000257, NO, "CCC", do_ccc},
 		{0177777, 0000241, NO, "CLC", do_clc},
@@ -12,20 +12,20 @@ Command cmd[] = {
 		{0177777, 0000242, NO, "CLV", do_clv},
 		{0177777, 0000244, NO, "CLZ", do_clz},
 
-		{0177777, 0000277, NO, "CCC", do_scc},
-		{0177777, 0000261, NO, "CLC", do_slc},
-		{0177777, 0000270, NO, "CLN", do_sln},
-		{0177777, 0000262, NO, "CLV", do_slv},
-		{0177777, 0000264, NO, "CLZ", do_slz},
+		{0177777, 0000277, NO, "SCC", do_scc},
+		{0177777, 0000261, NO, "SEC", do_sec},
+		{0177777, 0000270, NO, "SEN", do_sen},
+		{0177777, 0000262, NO, "SEV", do_sev},
+		{0177777, 0000264, NO, "SEZ", do_sez},
 
-		{0177770, 0000200, NO, "RTS", do_rts},
-*/
+		//{0177770, 0000200, NO, "RTS", do_rts},
+
 		{0177400, 0000400, haveXX, "BR", do_br},
-		/*{0177400, 0001400, haveXX, "BEQ", do_beq},
+		{0177400, 0001400, haveXX, "BEQ", do_beq},
 		{0177400, 0001000, haveXX, "BNE", do_bne},
 		{0177400, 0100400, haveXX, "BMI", do_bmi},
 		{0177400, 0100000, haveXX, "BPL", do_bpl},
-		{0177400, 0002400, haveXX, "BLT", do_blt},
+		/*{0177400, 0002400, haveXX, "BLT", do_blt},
 		{0177400, 0002000, haveXX, "BGE", do_bge},
 		{0177400, 0003400, haveXX, "BLE", do_ble},
 */
@@ -77,13 +77,13 @@ void do_mov () {
 	else
 		w_write(dd.adr, ss.val);
 	set_NZ (ss.val);
-	reg[dd.adr] = ss.val;
 	B = 0;
 }
 
 void do_add () {
 	w_write(dd.adr, ss.val + dd.val);
-	reg[dd.adr] = ss.val + dd.val;
+	set_NZ (ss.val + dd.val);
+	C = ((ss.val + dd.val) >> (8 * sizeof(word))) & 1;
 }
 
 void do_sob () {
@@ -98,6 +98,83 @@ void do_br () {
 
 }
 
-void do_nothing () {}
+void do_beq() {
+    if(Z)
+        do_br();
+}
 
-			
+void do_bne() {
+    if(!Z)
+        do_br();
+}
+
+void do_bmi() {
+    if(N)
+        do_br	();
+}
+
+void do_bpl() {
+    if(!N)
+        do_br();
+}
+
+void do_ccc()
+{
+	N = 0;
+	Z =0;
+	V = 0;
+	C = 0;
+}
+
+void do_clc()
+{
+    C = 0;
+}
+
+void do_cln()
+{
+    N = 0;
+}
+
+void do_clv()
+{
+	V = 0;
+}
+
+void do_clz()
+{
+    Z = 0;
+}
+
+
+void do_scc()
+{
+    N = 1;
+	Z = 1;
+	V = 1;
+	C = 1;
+}
+
+void do_sec()
+{
+    C = 1;
+}
+
+void do_sen()
+{
+    N = 1;
+}
+
+void do_sev()
+{
+    V = 1;
+}
+
+void do_sez()
+{
+    Z = 1;
+}
+
+
+
+void do_nothing () {}
