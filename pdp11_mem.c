@@ -42,25 +42,47 @@ int main() {
 }
 
 byte b_read  (Adress adr) {
-    return mem[adr];
+    byte b;
+	if(adr < 8)
+		b = (byte)reg[adr]|0xff;
+	else
+		b = mem[adr];
+    return b;
 }
 
 void b_write (Adress adr, byte b) {
-    mem[adr] = b;
+	if(adr < 8)
+	{
+		if(b & 0200)
+			reg[adr] = 0xFF00 | (word)b;
+		else
+			reg[adr] = 0x0000 | (word)b;
+    }
+	else
+		mem[adr] = b;
 }
 
-word w_read  (Adress adr) {
+word w_read  (Adress adr) {	
 	word w = 0;
-	w = ((word)mem[adr + 1]) << 8;
-	w = w | mem[adr];
+	if(adr < 8)
+        w = reg[adr];
+    else {
+		w = ((word)mem[adr + 1]) << 8;
+		w = w | mem[adr];
+	}
 	return w;
 }
 
 void w_write (Adress adr, word w) {
-	word t = w;
-	mem[adr] = (byte)t;
-	t = w;
-	mem[adr + 1] = (byte) (t >> 8);
+	
+	if(adr < 8)
+		reg[adr] = w;
+	else {
+		word t = w;
+		mem[adr] = (byte)t;
+		t = w;
+		mem[adr + 1] = (byte) (t >> 8);
+	}
 }
 
 void load_file() {
