@@ -33,13 +33,13 @@ Command cmd[] = {
 	//	{0177000, 0004000, haveR | haveDD, "JSR", do_jsr},
 
 		{0170000, 0060000, haveSS | haveDD, "ADD", do_add},
-	//	{0170000, 0160000, haveSS | haveDD, "SUB", do_sub},
+		{0170000, 0160000, haveSS | haveDD, "SUB", do_sub},
 
-	//	{0077700, 0005000, haveB | haveDD, "CLR", do_clr},
-	//	{0077700, 0005700, haveB | haveDD, "TST", do_tst},
+		{0077700, 0005000, haveB | haveDD, "CLR", do_clr},
+		{0077700, 0005700, haveB | haveDD, "TST", do_tst},
 
 		{0070000, 0010000, haveB | haveSS | haveDD, "MOV", do_mov},
-	//	{0070000, 0020000, haveB | haveSS | haveDD, "CMP", do_cmp},
+		{0070000, 0020000, haveB | haveSS | haveDD, "CMP", do_cmp},
 		
 		{0177777, 0000000, NO, "HALT", do_halt},
 		
@@ -60,7 +60,6 @@ void set_NZ (word w) {
 			N = (w >> 7) & 1;
 	}
 }
-void set_C(word w);
 
 void print_NZVC(){
 	printf("\n N=%o Z=%o V=%o C=%o ",N ,Z ,V ,C);
@@ -87,10 +86,9 @@ void do_add () {
 }
 
 void do_sob () {
-	if(reg[R]) {
+	reg[R]--;
+	if(reg[R])
 		pc = pc - NN*2;
-		reg[R]--;
-	}
 }
 
 void do_br () {
@@ -118,63 +116,83 @@ void do_bpl() {
         do_br();
 }
 
-void do_ccc()
-{
+void do_ccc() {
 	N = 0;
 	Z =0;
 	V = 0;
 	C = 0;
 }
 
-void do_clc()
-{
+void do_clc() {
     C = 0;
 }
 
-void do_cln()
-{
+void do_cln() {
     N = 0;
 }
 
-void do_clv()
-{
+void do_clv() {
 	V = 0;
 }
 
-void do_clz()
-{
+void do_clz() {
     Z = 0;
 }
 
-
-void do_scc()
-{
+void do_scc() {
     N = 1;
 	Z = 1;
 	V = 1;
 	C = 1;
 }
 
-void do_sec()
-{
+void do_sec() {
     C = 1;
 }
 
-void do_sen()
-{
+void do_sen() {
     N = 1;
 }
 
-void do_sev()
-{
+void do_sev() {
     V = 1;
 }
 
-void do_sez()
-{
+void do_sez() {
     Z = 1;
 }
 
+void do_sub() {
+    w_write(dd.adr, dd.val - ss.val);
+    set_NZ(dd.val - ss.val);
+    C = ((dd.val - ss.val) >> (8 * sizeof(word))) & 1;
+}
 
+void do_cmp() {
+    set_NZ(ss.val - dd.val);
+    if(B)
+        C = ((ss.val - dd.val) >> (8 * sizeof(byte))) & 1;
+	else
+		C = ((ss.val - dd.val) >> (8 * sizeof(word))) & 1;
+}
 
-void do_nothing () {}
+void do_clr() {
+	if(B)
+		b_write(dd.adr, 0);
+	else
+		w_write(dd.adr, 0);
+	N = 0;
+	Z = 1;
+	V = 0;
+	C = 0;
+	B = 0;
+}
+
+void do_tst() {
+	set_NZ(dd.val);
+	V = 0;
+	C = 0;
+	B = 0;
+}
+
+void do_nothing() {}
