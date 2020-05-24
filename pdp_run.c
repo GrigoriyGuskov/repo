@@ -45,7 +45,7 @@ Arg get_mr(word w) {
 			res.adr = w_read(reg[r]);
 			if(B) {
 				res.val = b_read(res.adr);
-				reg[r] += 2;
+				reg[r] ++;
 			}
 			else {
 				res.val = w_read(res.adr);
@@ -56,7 +56,7 @@ Arg get_mr(word w) {
 			else
 				printf("@(R%o)+ ",r);
 			break;
-		case 4:					//#3
+		case 4:					
 			if(B) {
 				if(r<6)
 					reg[r]--;
@@ -118,6 +118,8 @@ void run() {
 			for(int i = 0; cmd[i].mask ; i++){
 				if((w & cmd[i].mask) == cmd[i].opcode) {
 					printf("%s ", cmd[i].name);
+					if(cmd[i].par & 32)
+						B = get_B(w);
 					if(cmd[i].par & 1)
 						XX = get_XX(w);
 					if(cmd[i].par & 2)
@@ -128,8 +130,6 @@ void run() {
 						NN = get_NN(w); 
 					if(cmd[i].par & 16)
 						dd = get_mr(w);
-					if(cmd[i].par & 32)
-						B = get_B(w);
 					cmd[i].do_func();
 				}
 			}
