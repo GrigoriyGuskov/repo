@@ -46,7 +46,6 @@ byte N, Z, V, C;
 void print_NZVC();
 
 void set_NZ(word w);
-void set_C(word w);
 
 byte b_read  (Adress adr);				// читает из "старой памяти" mem байт с "адресом" a.
 void b_write (Adress adr, byte b);				// пишет значение val в "старую память" mem в байт с "адресом" a.
