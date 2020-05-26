@@ -25,7 +25,7 @@ Command cmd[] = {
 		{0177400, 0001000, haveXX, "BNE", do_bne},
 		{0177400, 0100400, haveXX, "BMI", do_bmi},
 		{0177400, 0100000, haveXX, "BPL", do_bpl},
-		/*{0177400, 0002400, haveXX, "BLT", do_blt},
+		/*{0177400, 0002400, haveXX, "BLT", do_blt},			// требуется флаг V
 		{0177400, 0002000, haveXX, "BGE", do_bge},
 		{0177400, 0003400, haveXX, "BLE", do_ble},
 */
@@ -66,7 +66,7 @@ void print_NZVC(){
 }
 
 void do_halt() {
-	printf("THE END!!!\n");
+	//printf("THE END!!!\n");
 	exit(0);
 }
 
