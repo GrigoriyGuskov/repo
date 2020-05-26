@@ -43,7 +43,9 @@ int main() {
 
 byte b_read  (Adress adr) {
     byte b;
-	if(adr < 8)
+	if (adr > MEMSIZE - 3)
+		do_halt();
+	else if(adr < 8)
 		b = (byte)reg[adr]|0xff;
 	else
 		b = mem[adr];
@@ -64,7 +66,9 @@ void b_write (Adress adr, byte b) {
 
 word w_read  (Adress adr) {	
 	word w = 0;
-	if(adr < 8)
+	if (adr > MEMSIZE - 3)
+		do_halt();
+	else if(adr < 8)
         w = reg[adr];
     else {
 		w = ((word)mem[adr + 1]) << 8;
